@@ -15,15 +15,22 @@ function model() {
 }
 
 function ConnectDatabase(host, user, password, database) {
-    var con = mysql.createConnection({
+    var con = mysql.createPool({
         host: host,
         user: user,
         password: password,
         database: database
     });
 
-    con.connect(function (err) {
-        if (err) throw err;
+    // con.connect(function (err) {
+    //     if (err) throw err;
+    // });
+
+    con.getConnection((err,connection)=> {
+        if(err)
+        throw err;
+        console.log('Database connected successfully');
+        connection.release();
     });
 
     return con;
