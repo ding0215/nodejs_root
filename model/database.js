@@ -109,7 +109,9 @@ async function getWhere(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), function (error, results, fields) {
-            if (error || results === undefined) throw error;
+            if(error){
+                reject(error)
+            }
 
             // helper.preview(typeof array.row);
             if (typeof array.row !== 'undefined' && array.row == 1) {
@@ -165,7 +167,9 @@ async function dataInsert(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), async function (error, results, fields) {
-            if (error || results === undefined) throw error;
+            if(error){
+                reject(error)
+            }
 
             array.select = 'id';
             array.condition = array.data;
@@ -225,7 +229,9 @@ async function dataUpdate(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), async function (error, results, fields) {
-            if (error || results === undefined) throw error;
+            if(error){
+                reject(error)
+            }
 
             array.select = 'id';
             // array.condition = array.data;
@@ -247,7 +253,9 @@ function queryR(array, callback) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), function (error, results, fields) {
-            if (error) throw error;
+            if(error){
+                reject(error)
+            }
             if (typeof array.row !== 'undefined' && array.row == 1) {
                 if (results.length === 0) {
                     resolve(results);
