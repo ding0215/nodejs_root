@@ -78,7 +78,7 @@ async function getWhere(array) {
         });
         querys += ' WHERE ' + condition;
     } else {
-        if (array.condition !== 'undefined') {
+        if (array?.condition !== undefined) {
             // console.log(array);
             querys += ' WHERE ' + array.condition;
         }
