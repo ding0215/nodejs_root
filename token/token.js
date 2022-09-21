@@ -31,8 +31,12 @@ function generateToken(data) {
 }
 
 function verifyToken(token) {
-    const decodedTokenData = jwt.verify(token, jwtSecretKey);
-    return decodedTokenData;
+    try {
+        const decodedTokenData = jwt.verify(token, jwtSecretKey)
+        return decodedTokenData
+    } catch (error) {
+        return error
+    }
 }
 
 function decodeToken(token) {
