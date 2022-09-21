@@ -34,6 +34,12 @@ function check_auth_middleware(req, res, next) {
     const current_time = new Date().getTime();
 
     const tokenTime = new Date(jwtData.EXP_API_TIME).getTime();
+    
+    if (jwtData instanceof Error) {
+        info_response['msg'] = jwtData.message;
+
+        return res.status(info_response.status).send(info_response);
+    }
 
     if (tokenTime < current_time) {
         info_response['msg'] = "TOKEN_EXPIRED";
