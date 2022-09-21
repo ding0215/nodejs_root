@@ -87,7 +87,7 @@ function genLoginToken(data) {
 }
 
 function getTokenData(token) {
-    return objToken.decodeToken(token);
+    return objToken.verifyToken(token);
 }
 
 function getCurrentDate(){
