@@ -1,7 +1,7 @@
 module.exports = { middleware };
-const { helper: hlp } = require("../helper");
+const { helper: hlp } = require("../helper/helper");
 const helper = new hlp();
-const { model } = require("../database");
+const { model } = require("../model/database");
 const db = new model();
 
 
