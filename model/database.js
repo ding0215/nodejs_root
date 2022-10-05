@@ -1,6 +1,6 @@
 const { query } = require('express');
 const mysql = require('mysql');
-const { helper: hlp } = require('../helper/helper');
+const { helper: hlp } = require('./helper');
 require('dotenv').config();
 
 const helper = new hlp();
@@ -12,25 +12,33 @@ function model() {
     this.dataInsert = dataInsert;
     this.dataUpdate = dataUpdate;
     this.queryR = queryR;
+    this.raw_query = raw_query;
 }
 
 function ConnectDatabase(host, user, password, database) {
-    var con = mysql.createPool({
+    // var con = mysql.createPool({
+    //     host: host,
+    //     user: user,
+    //     password: password,
+    //     database: database
+    // });
+
+    // con.getConnection((err, connection) => {
+    //     if (err)
+    //         throw err;
+    //     console.log('Database connected successfully');
+    //     connection.release();
+    // });
+
+    var con = mysql.createConnection({
         host: host,
         user: user,
         password: password,
         database: database
     });
 
-    // con.connect(function (err) {
-    //     if (err) throw err;
-    // });
-
-    con.getConnection((err,connection)=> {
-        if(err)
-        throw err;
-        console.log('Database connected successfully');
-        connection.release();
+    con.connect(function (err) {
+        if (err) throw err;
     });
 
     return con;
@@ -45,7 +53,7 @@ async function getWhere(array) {
         return is_valid;
     }
 
-    var condition = querys = table = ordering = limit = join = '';
+    var condition = querys = table = ordering = limit = join = group = '';
 
     if (typeof array.table !== 'undefined' && array.table.length != 0) {
         table = array.table;
@@ -59,15 +67,16 @@ async function getWhere(array) {
     if (typeof array.join !== 'undefined' && typeof array.join == "object") {
 
         Object.keys(array.join).forEach(function (value, index) {
-                join += " LEFT JOIN " +value + " ON " + array.join[value];
+            join += " LEFT JOIN " + value + " ON " + array.join[value];
         });
         querys += join;
     }
     querys = 'SELECT ' + select + ' FROM ' + table + join;
 
-    helper.preview(querys);
+    helper.preview(typeof array.condition);
 
     if (typeof array.condition !== 'undefined' && typeof array.condition == "object") {
+        // helper.preview('sohai')
 
         Object.keys(array.condition).forEach(function (value, index) {
             if (Object.keys(array.condition).length - 1 == index) {
@@ -78,7 +87,7 @@ async function getWhere(array) {
         });
         querys += ' WHERE ' + condition;
     } else {
-        if (array?.condition !== undefined) {
+        if (typeof array.condition !== 'undefined') {
             // console.log(array);
             querys += ' WHERE ' + array.condition;
         }
@@ -88,6 +97,11 @@ async function getWhere(array) {
     if (typeof array.ordering !== 'undefined' && array.ordering.length != 0) {
         ordering = array.ordering;
         querys += ' ORDER BY ' + ordering;
+    }
+
+    if (typeof array.group !== 'undefined' && array.group.length != 0) {
+        group = array.group;
+        querys += ' GROUP BY ' + group;
     }
     if (typeof array.limit !== 'undefined' && array.limit.length != 0) {
         limit = array.limit;
@@ -109,10 +123,11 @@ async function getWhere(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), function (error, results, fields) {
-            if(error){
+            // if (error || (results === undefined)) throw new Error("Message: " + error.message + " Error: " + error.sqlMessage);
+            if (error) {
                 reject(error)
             }
-
+            // console.log(results);
             // helper.preview(typeof array.row);
             if (typeof array.row !== 'undefined' && array.row == 1) {
                 // resolve(query.toString());
@@ -167,7 +182,7 @@ async function dataInsert(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), async function (error, results, fields) {
-            if(error){
+            if (error) {
                 reject(error)
             }
 
@@ -190,33 +205,43 @@ async function dataUpdate(array) {
         return is_valid;
     }
 
-    var querys = table = data = condition = '';
+    var querys = table = data = condition = "";
     if (typeof array.table !== 'undefined' && array.table.length != 0) {
         table = array.table;
     }
 
-    querys = 'UPDATE ' + table + ' SET ';
+    querys = "UPDATE " + table + " SET ";
     if (typeof array.data !== 'undefined' && array.data != []) {
         Object.keys(array.data).forEach(function (value, index) {
             if (Object.keys(array.data).length - 1 == index) {
-                data += value + '= "' + array.data[value] + `"`;
+                if (array.data[value] != null) {
+                    data += value + "= '" + array.data[value] + "'";
+                } else {
+                    data += value + "= " + array.data[value];
+                }
             } else {
-                data += value + '= "' + array.data[value] + `",`;
+                if (array.data[value] != null) {
+                    data += value + "= '" + array.data[value] + "',";
+                } else {
+                    data += value + "= " + array.data[value] + ",";
+                }
             }
         });
         querys += data;
     }
 
-    if (typeof array.condition !== 'undefined' && array.condition != []) {
+    if (typeof array?.condition !== 'undefined' && array.condition != []) {
         Object.keys(array.condition).forEach(function (value, index) {
             if (Object.keys(array.condition).length - 1 == index) {
-                condition += value + '= "' + array.condition[value] + `"`;
+                condition += value + "= '" + array.condition[value] + "'";
             } else {
-                condition += value + '= "' + array.condition[value] + `" AND `;
+                condition += value + "= '" + array.condition[value] + "' AND ";
             }
         });
-        querys += ' WHERE ' + condition;
+        querys += " WHERE " + condition;
     }
+
+    // helper.preview(querys)
 
     // db.query(querys.toString(), function (error, results, fields) {
     //     if (error) throw error;
@@ -229,7 +254,7 @@ async function dataUpdate(array) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), async function (error, results, fields) {
-            if(error){
+            if (error) {
                 reject(error)
             }
 
@@ -245,6 +270,18 @@ async function dataUpdate(array) {
     });
 }
 
+function raw_query(query, callback) {
+
+    return new Promise(function (resolve, reject) {
+        db.query(query.toString(), function (error, results, fields) {
+            if (error) {
+                reject(error)
+            }
+            resolve(results)
+        });
+    });
+}
+
 function queryR(array, callback) {
     var querys = '';
     if (typeof array.data !== 'undefined') {
@@ -253,7 +290,7 @@ function queryR(array, callback) {
 
     return new Promise(function (resolve, reject) {
         db.query(querys.toString(), function (error, results, fields) {
-            if(error){
+            if (error) {
                 reject(error)
             }
             if (typeof array.row !== 'undefined' && array.row == 1) {
@@ -272,7 +309,7 @@ function queryR(array, callback) {
 
 async function checkValidType(array) {
 
-    const table = array["table"];
+    const table = array["table"].split(" ")[0];
     const condition = array["condition"];
 
     if (condition === undefined || typeof condition === "string") {
