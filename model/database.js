@@ -1,6 +1,6 @@
 const { query } = require('express');
 const mysql = require('mysql');
-const { helper: hlp } = require('./helper');
+const { helper: hlp } = require('../helper/helper');
 require('dotenv').config();
 
 const helper = new hlp();
