@@ -1,0 +1,15 @@
+Node js useful package
+
+- forever monitor // use for running server forever
+- helmet // secure apps by setting various headers
+- body-parser // convert incoming request into javascript object
+- cors // configure express to combine headers specifying that your Rest API accepts requests from any source
+- express // use for setup api in node js
+- dot env // use to get variable in .env file
+- jsonwebtoken // use to generate and decrypt jwt token
+- mysql // use to connect mysql db and perform queries
+- nodemon // tool to automatically restarting the node server when file changes
+- nodemailer // tool for send email (SMTP)
+- morgan // use for api logging
+    - rotating-file-stream // use together with morgan
+- firebase-admin // tool to interact with firebase

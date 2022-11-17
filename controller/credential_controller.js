@@ -13,6 +13,13 @@ const mw = new middleware();
 router.post('/signIn', sign_in_middleware, signIn);
 router.post('/signUp', sign_up_middleware, mw.check_signup_duplicate, signUp);
 
+router.get('/test', async function (req, res) {
+    const query = "select * from Onesoft_common.User"
+    const result = await db.raw_query(query);
+
+    return res.send(result);
+})
+
 async function signIn(req, res) {
     // helper.preview(req.body.email);
     let array = {

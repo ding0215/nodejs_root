@@ -44,7 +44,7 @@ function ConnectDatabase(host, user, password, database) {
     return con;
 }
 
-const db = ConnectDatabase(process.env.HOSTNAME, process.env.USER_ID, process.env.PASSWORD, process.env.DATABASE);
+const db = ConnectDatabase(process.env.HOSTNAME, process.env.USER_ID, process.env.PASSWORD);
 
 async function getWhere(array) {
 
