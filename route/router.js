@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const credential = require('../Controller/credential_controller');
-const test = require('./test')
+const router_v2 = require('./router_v2')
 
-router.use('/credential',credential);
-router.use('/test', test)
+router.use('/router_v2', router_v2)
 
 module.exports = router;
 

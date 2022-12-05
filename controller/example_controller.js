@@ -1,8 +1,15 @@
 const smtp = require("../helper/smtp")
+const db = require("../model/database")
 
 
 exports.testing = async function (req, res) {
     res.send(req.body)
+}
+
+exports.query_example = async function (req, res) {
+    const result = await db.raw_query("Select * from User")
+
+    res.send(result)
 }
 
 exports.sendMail = async function (req, res) {
