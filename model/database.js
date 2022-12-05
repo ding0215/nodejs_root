@@ -20,7 +20,8 @@ function ConnectDatabase(host, user, password, database) {
     //     host: host,
     //     user: user,
     //     password: password,
-    //     database: database
+    //     database: database,
+
     // });
 
     // con.getConnection((err, connection) => {
