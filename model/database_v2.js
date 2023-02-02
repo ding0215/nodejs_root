@@ -11,9 +11,11 @@ const pool = mysql.createPool({
     connectionLimit: 10,
 })
 
-exports.raw_query = function (query, db = process.env.DATABASE) {
+
+
+exports.raw_query = function (query, db = process.env.DATABASE, db_pool = pool) {
     return new Promise(function (resolve, reject) {
-        pool.getConnection(function (err, connection) {
+        db_pool.getConnection(function (err, connection) {
 
             if (err) {
                 reject(err);
