@@ -13,6 +13,7 @@ function model() {
     this.dataUpdate = dataUpdate;
     this.queryR = queryR;
     this.raw_query = raw_query;
+    this.connect_db = ConnectDatabase
 }
 
 function ConnectDatabase(host, user, password, database) {
@@ -47,7 +48,7 @@ function ConnectDatabase(host, user, password, database) {
 
 const db = ConnectDatabase(process.env.HOSTNAME, process.env.USER_ID, process.env.PASSWORD);
 
-async function getWhere(array) {
+async function getWhere(array, db = db) {
 
     const is_valid = await checkValidType(array);
     if (!is_valid) {
@@ -149,7 +150,7 @@ async function getWhere(array) {
     });
 }
 
-async function dataInsert(array) {
+async function dataInsert(array, db = db) {
     var querys = table = col = data = '';
     if (typeof array.table !== 'undefined' && array.table.length != 0) {
         table = array.table;
@@ -198,7 +199,7 @@ async function dataInsert(array) {
         });
     });
 }
-async function dataUpdate(array) {
+async function dataUpdate(array, db = db) {
 
     const is_valid = await checkValidType(array);
 
@@ -343,7 +344,7 @@ async function checkValidType(array) {
     // return filtered_data;
 }
 
-function getFields(table) {
+function getFields(table, db = db) {
     const query = "SELECT COLUMN_NAME, DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where table_schema = '" + process.env.DATABASE + "' and table_name = '" + table + "'";
     // const query = "SELECT * FROM test";
 
