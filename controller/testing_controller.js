@@ -1,22 +1,111 @@
 const smtp = require("../helper/smtp")
 const db = require("../model/database_v2")
+const https = require('https');
+const { helper: hlp } = require("../helper/helper");
+const { json } = require("body-parser");
 
+const helper = new hlp();
 
 exports.testing = async function (req, res) {
-    res.send(req.body)
+  // console.log
+  const obj = {
+    "merchant_id" : "M000000000106",
+    "table_no": "10"
+  }
+
+  const json_obj = JSON.stringify(obj)
+  // console.log(json_obj)
+  console.log(helper.enc_dec("decrypt", "OTgyWjRoZmhJRUpvcGUrOHlYKzdMQT09"))
+  // console.log(helper.enc_dec("decrypt", req.body.data))
+
+  console.log(helper.getCurrentDate())
+  const final_data = []
+  const specification_data = [
+    {
+      specification: {
+        name: [
+          "wong mee yen",
+          "may hoon",
+          "kuai tiao"
+        ],
+        price: [
+          0, 0, 0
+        ]
+      },
+      title: "Noodle type"
+    },
+    {
+      specification: {
+        name: [
+          "a",
+          "b",
+          "c"
+        ],
+        price: [
+          1, 2, 3
+        ]
+      },
+      title: "testing"
+    }
+  ]
+
+  for (const data of specification_data) {
+    const obj = {}
+    const items = []
+    obj.category = data.title
+    const specification = data.specification
+    const specification_keys = Object.keys(specification)
+
+    for (let index = 0; index < specification[specification_keys[0]].length; index++) {
+      const items_obj = {}
+      for (const key of specification_keys) {
+        items_obj[key] = specification[key][index];
+      }
+      // items_obj.name = specification.name[index];
+      // items_obj.price = specification.price[index];
+      items.push(items_obj)
+    }
+    obj.items = items
+    final_data.push(obj)
+  }
+
+
+  res.send(final_data)
 }
 
-exports.testing_db = async function(req, res) {
-    const result = await db.raw_query("Select * from User").catch((error) => console.log("error", error))
-    res.send(result)
+exports.testing_db = async function (req, res) {
+  const result = await db.raw_query("Select * from User").catch((error) => console.log("error", error))
+  res.send(result)
+}
+
+exports.testing_axios = async function (req, res) {
+  https.get('https://jsonplaceholder.typicode.com/users', res => {
+    let data = [];
+
+    res.on('data', chunk => {
+      data.push(chunk);
+    });
+
+    res.on('end', () => {
+      console.log('Response ended: ');
+      const users = JSON.parse(Buffer.concat(data).toString());
+
+      for (user of users) {
+        console.log(`Got user with id: ${user.id}, name: ${user.name}`);
+      }
+
+    });
+  }).on('error', err => {
+    console.log('Error: ', err.message);
+  });
 }
 
 exports.sendMail = async function (req, res) {
-    const send_mail_promise = await smtp.send_email({
-        from: "spatmain8@gmail.com",
-        to: "ian.ding@onesoftlab.com",
-        subject: "Testing",
-        html: `<!DOCTYPE html>
+  const send_mail_promise = await smtp.send_email({
+    from: "spatmain8@gmail.com",
+    to: "ian.ding@onesoftlab.com",
+    subject: "Testing",
+    html: `<!DOCTYPE html>
         <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
         <head>
           <meta charset="UTF-8">
@@ -109,9 +198,9 @@ exports.sendMail = async function (req, res) {
           </table>
         </body>
         </html>`
-    }).catch(function(err) {
-        return res.status(500).send(err)
-    })
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
 
-    return res.status(200).send(send_mail_promise)
+  return res.status(200).send(send_mail_promise)
 }
