@@ -93,8 +93,8 @@ function getTokenData(token) {
 function getCurrentDate() {
     let year = dateObj.getFullYear();
 
-    let month = dateObj.getMonth();
-    month = ('0' + month + 1).slice(-2);
+    let month = dateObj.getMonth() + 1;
+    month = ('0' + month).slice(-2);
     // To make sure the month always has 2-character-formate. For example, 1 => 01, 2 => 02
 
     let date = dateObj.getDate();
