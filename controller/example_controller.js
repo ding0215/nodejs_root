@@ -1,9 +1,15 @@
 const smtp = require("../helper/smtp")
 const db = require("../model/database")
+const { helper: hlp } = require("../helper/helper");
+const helper = new hlp();
 
 
 exports.testing = async function (req, res) {
-  res.send(req.body)
+  const data = encodeURI(`gino.lim@onesoftlab.com`)
+  const encrypted = helper.enc_dec('encrypt', data)
+  console.log(helper.enc_dec('encrypt', data))
+
+  console.log(helper.enc_dec('decrypt', encrypted))
 }
 
 exports.query_example = async function (req, res) {
