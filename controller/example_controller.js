@@ -10,6 +10,8 @@ exports.testing = async function (req, res) {
   console.log(helper.enc_dec('encrypt', data))
 
   console.log(helper.enc_dec('decrypt', encrypted))
+
+  console.log(`UPDATE user SET email = '${helper.enc_dec('decrypt', encrypted)}'`)
 }
 
 exports.query_example = async function (req, res) {

@@ -23,7 +23,7 @@ function preview(data) {
 function enc_dec(action, string) {
     let output = false;
 
-    const encrypt_method = 'AES-256-CBC';
+    const encrypt_method = '    ';
     const secret_key = 'This is my secret key:!super@duper#hyper$';
     const secret_iv = 'This is my secret iv:!super@duper#hyper$';
 
@@ -33,19 +33,17 @@ function enc_dec(action, string) {
     const blockSize = iv.length / 2;
 
     if (action === 'encrypt') {
-        const encryptor = crypto.createCipheriv(encrypt_method, key, iv);
-        const padding = blockSize - (string.length % blockSize);
-        const zeroPadding = Buffer.alloc(padding, 0);
-        const pre_output = encryptor.update(string + zeroPadding.toString('binary'), 'utf8', 'base64') + encryptor.final('base64');
-        output = base64_encode_decode('encode', pre_output);
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+        let crypt = cipher.update(string, 'utf8', 'base64');
+        crypt += cipher.final("base64");
+        output = crypt
     }
 
     if (action === 'decrypt') {
-        const decryptor = crypto.createDecipheriv(encrypt_method, key, iv);
-        const decoded_string = base64_encode_decode('decode', string);
-        decryptor.setAutoPadding(false);
-        const pre_output = decryptor.update(decoded_string, 'base64', 'utf8') + decryptor.final('utf8');
-        output = pre_output.replace(/\0+$/, ''); // remove zero-padding
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        let decrypt = decipher.update(string, 'base64', 'utf8');
+        decrypt += decipher.final();
+        output = decrypt
     }
 
     return output;
