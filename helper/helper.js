@@ -36,7 +36,7 @@ function enc_dec(action, string) {
         const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
         let crypt = cipher.update(string, 'utf8', 'base64');
         crypt += cipher.final("base64");
-        output = crypt
+        output = encodeURIComponent(crypt)
     }
 
     if (action === 'decrypt') {
