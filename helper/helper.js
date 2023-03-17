@@ -32,18 +32,22 @@ function enc_dec(action, string) {
 
     const blockSize = iv.length / 2;
 
-    if (action === 'encrypt') {
-        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-        let crypt = cipher.update(string, 'utf8', 'base64');
-        crypt += cipher.final("base64");
-        output = encodeURIComponent(crypt)
-    }
+    try {
+        if (action === 'encrypt') {
+            const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+            let crypt = cipher.update(string, 'utf8', 'base64');
+            crypt += cipher.final("base64");
+            output = crypt
+        }
 
-    if (action === 'decrypt') {
-        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-        let decrypt = decipher.update(string, 'base64', 'utf8');
-        decrypt += decipher.final();
-        output = decrypt
+        if (action === 'decrypt') {
+            const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+            let decrypt = decipher.update(string, 'base64', 'utf8');
+            decrypt += decipher.final();
+            output = decrypt
+        }
+    } catch (error) {
+        output = undefined
     }
 
     return output;

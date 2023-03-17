@@ -1,17 +1,21 @@
 const smtp = require("../helper/smtp")
 const db = require("../model/database")
 const { helper: hlp } = require("../helper/helper");
+const { urlencoded } = require("body-parser");
 const helper = new hlp();
 
 
 exports.testing = async function (req, res) {
-  const data = encodeURI(`gino.lim@onesoftlab.com`)
-  const encrypted = helper.enc_dec('encrypt', data)
-  console.log(helper.enc_dec('encrypt', data))
+  console.log(encodeURIComponent('vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
+  console.log('req email', req.params.email)
+  const enc_email = helper.enc_dec('encrypt', 'gino.lim@onesoftlab.com')
+  console.log('enc email', enc_email)
+  console.log('dec enc_email', helper.enc_dec('decrypt', enc_email))
 
-  console.log(helper.enc_dec('decrypt', encrypted))
-
-  console.log(`UPDATE user SET email = '${helper.enc_dec('decrypt', encrypted)}'`)
+  const enc_something = helper.enc_dec('encrypt', 'U000001')
+  const dec_something = helper.enc_dec('decrypt', enc_something)
+  console.log('dec something', dec_something)
+  console.log('dec req email', helper.enc_dec('decrypt', 'vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
 }
 
 exports.query_example = async function (req, res) {
