@@ -1,16 +1,54 @@
 const smtp = require("../helper/smtp")
+const db = require("../model/database")
+const { helper: hlp } = require("../helper/helper");
+const { urlencoded } = require("body-parser");
+const helper = new hlp();
 
 
 exports.testing = async function (req, res) {
-    res.send(req.body)
+  console.log(encodeURIComponent('vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
+  console.log('req email', req.params.email)
+  const enc_email = helper.enc_dec('encrypt', 'gino.lim@onesoftlab.com')
+  console.log('enc email', enc_email)
+  console.log('dec enc_email', helper.enc_dec('decrypt', enc_email))
+
+  const enc_something = helper.enc_dec('encrypt', 'U000001')
+  const dec_something = helper.enc_dec('decrypt', enc_something)
+  console.log('dec something', dec_something)
+  console.log('dec req email', helper.enc_dec('decrypt', 'vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
+}
+
+exports.query_example = async function (req, res) {
+  const result = await db.raw_query("Select * from User")
+
+  res.send(result)
+}
+
+exports.sendEmail = async function (req, res) {
+  const send_mail_promise = await smtp.send_email({
+    from: "oontao.wong@onesoftlab.com",
+    to: "ian.ding@onesoftlab.com",
+    subject: "Testing",
+    templateData: {
+      name: 'John Doe',
+      message: 'Thanks for your order!'
+    }
+  }).catch(function (err) {
+    console.log("err", err)
+    return res.status(500).send(err)
+  })
+
+  // console.log("success", send_mail_promise)
+
+  return res.status(200).send(send_mail_promise)
 }
 
 exports.sendMail = async function (req, res) {
-    const send_mail_promise = await smtp.send_email({
-        from: "spatmain8@gmail.com",
-        to: "ian.ding@onesoftlab.com",
-        subject: "Testing",
-        html: `<!DOCTYPE html>
+  const send_mail_promise = await smtp.send_email({
+    from: "spatmain8@gmail.com",
+    to: "ian.ding@onesoftlab.com",
+    subject: "Testing",
+    html: `<!DOCTYPE html>
         <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
         <head>
           <meta charset="UTF-8">
@@ -103,9 +141,9 @@ exports.sendMail = async function (req, res) {
           </table>
         </body>
         </html>`
-    }).catch(function(err) {
-        return res.status(500).send(err)
-    })
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
 
-    return res.status(200).send(send_mail_promise)
+  return res.status(200).send(send_mail_promise)
 }
