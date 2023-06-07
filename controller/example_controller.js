@@ -1,9 +1,8 @@
 const smtp = require("../helper/smtp")
 const db = require("../model/database")
-const { helper: hlp } = require("../helper/helper");
+const helper = require("../helper/helper");
 const { urlencoded } = require("body-parser");
-const helper = new hlp();
-
+// const helper = new hlp();
 
 exports.testing = async function (req, res) {
   console.log(encodeURIComponent('vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
@@ -22,6 +21,14 @@ exports.query_example = async function (req, res) {
   const result = await db.raw_query("Select * from User")
 
   res.send(result)
+}
+
+exports.test = async function (req, res) {
+  const data = {
+    abc: 1
+  }
+  const token = helper.genLoginToken(data)
+  res.send(token)
 }
 
 exports.sendEmail = async function (req, res) {
