@@ -1,20 +1,20 @@
 const crypto = require('crypto');
-const { jwtToken } = require('../token/token');
+const jwtToken = require('../token/token');
 const dateObj = new Date();
 
-module.exports = { helper };
+// module.exports = { helper };
 
-const objToken = new jwtToken();
+// const objToken = new jwtToken();
 
-function helper() {
-    this.preview = preview;
-    this.encrypt_decrypt = encrypt_decrypt;
-    this.enc_dec = enc_dec;
-    this.base64_encode_decode = base64_encode_decode;
-    this.genLoginToken = genLoginToken;
-    this.getTokenData = getTokenData;
-    this.getCurrentDate = getCurrentDate;
-}
+exports.helper = {
+    preview,
+    encrypt_decrypt,
+    enc_dec,
+    base64_encode_decode,
+    genLoginToken,
+    getTokenData,
+    getCurrentDate,
+};
 
 function preview(data) {
     console.log(JSON.stringify(data, null, 2));
@@ -85,11 +85,11 @@ function base64_encode_decode(action, string) {
 }
 
 function genLoginToken(data) {
-    return objToken.generateToken(data);
+    return jwtToken.generateToken(data);
 }
 
 function getTokenData(token) {
-    return objToken.verifyToken(token);
+    return jwtToken.verifyToken(token);
 }
 
 function getCurrentDate() {
