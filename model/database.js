@@ -1,8 +1,5 @@
 const mysql = require('mysql');
-const { helper: hlp } = require('../helper/helper');
 require('dotenv').config();
-
-const helper = new hlp();
 
 const pool = mysql.createPool({
     host: process.env.HOSTNAME,
