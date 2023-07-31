@@ -1,16 +1,125 @@
 const smtp = require("../helper/smtp")
-
+const db = require("../model/database")
+const helper = require("../helper/helper");
+const { urlencoded } = require("body-parser");
+const CryptoJS = require('crypto-js');
+// const helper = new hlp();
 
 exports.testing = async function (req, res) {
-    res.send(req.body)
+  console.log(encodeURIComponent('vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
+  console.log('req email', req.params.email)
+  const enc_email = helper.enc_dec('encrypt', 'gino.lim@onesoftlab.com')
+  console.log('enc email', enc_email)
+  console.log('dec enc_email', helper.enc_dec('decrypt', enc_email))
+
+  const enc_something = helper.enc_dec('encrypt', 'U000001')
+  const dec_something = helper.enc_dec('decrypt', enc_something)
+  console.log('dec something', dec_something)
+  console.log('dec req email', helper.enc_dec('decrypt', 'vEft96mk8AbxyqBRiv6BCwHvInsyxM+QsG9goX81j54='))
+}
+
+exports.wss_enc_dec = async function (req, res) {
+  // console.log(typeof req.body.data)
+  if(!req.body.data || req.body.data.isEmpty){
+    return res.send("Something went wrong")
+  }
+
+  if(!req.body.fnc || req.body.fnc.isEmpty){
+    return res.send("Something went wrong")
+  }
+
+  switch (req.body.fnc) {
+    case "encrypt":
+      return res.send(wss_encrypt(JSON.stringify(req.body.data)))
+      // break;
+    case "decrypt":
+      return res.send(wss_decrypt(req.body.data))
+      // break;
+  }
+}
+
+function wss_encrypt(message) {
+  let pass = randomString(20)
+  let pass1 = pass.substring(0, 4)
+  let pass2 = pass.substring(4, 8)
+  let pass3 = pass.substring(8, 12)
+  let pass4 = pass.substring(12, 16)
+  let pass5 = pass.substring(16, 20)
+  var encrypted = CryptoJS.AES.encrypt(message, pass).toString()
+  let encrypted_message = pass1 + pass3 + pass5 + encrypted + pass2 + pass4
+  let decrypted = CryptoJS.AES.decrypt(encrypted, pass).toString(
+      CryptoJS.enc.Utf8,
+  )
+
+  // console.log('decript2: ', decrypted)
+
+  return encrypted_message
+}
+
+function wss_decrypt(data) {
+  let key1 = data.slice(0, 4)
+  let key2 = data.slice(-8).slice(0, 4)
+  let key3 = data.slice(4, 8)
+  let key4 = data.slice(-8).slice(-4)
+  let key5 = data.slice(8, 12)
+  let passphrase = key1 + key2 + key3 + key4 + key5
+  let content = data.slice(12, -8)
+  let decrypted = CryptoJS.AES.decrypt(content, passphrase)
+  let data_arr = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
+
+  return data_arr
+}
+
+function randomString(length) {
+  var result = ''
+  var characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  var charactersLength = characters.length
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
+}
+
+exports.query_example = async function (req, res) {
+  const result = await db.raw_query("Select * from User")
+
+  res.send(result)
+}
+
+exports.test = async function (req, res) {
+  const data = {
+    abc: 1
+  }
+  const token = helper.genLoginToken(data)
+  res.send(token)
+}
+
+exports.sendEmail = async function (req, res) {
+  const send_mail_promise = await smtp.send_email({
+    from: "oontao.wong@onesoftlab.com",
+    to: "ian.ding@onesoftlab.com",
+    subject: "Testing",
+    templateData: {
+      name: 'John Doe',
+      message: 'Thanks for your order!'
+    }
+  }).catch(function (err) {
+    console.log("err", err)
+    return res.status(500).send(err)
+  })
+
+  // console.log("success", send_mail_promise)
+
+  return res.status(200).send(send_mail_promise)
 }
 
 exports.sendMail = async function (req, res) {
-    const send_mail_promise = await smtp.send_email({
-        from: "spatmain8@gmail.com",
-        to: "ian.ding@onesoftlab.com",
-        subject: "Testing",
-        html: `<!DOCTYPE html>
+  const send_mail_promise = await smtp.send_email({
+    from: "spatmain8@gmail.com",
+    to: "ian.ding@onesoftlab.com",
+    subject: "Testing",
+    html: `<!DOCTYPE html>
         <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
         <head>
           <meta charset="UTF-8">
@@ -103,9 +212,9 @@ exports.sendMail = async function (req, res) {
           </table>
         </body>
         </html>`
-    }).catch(function(err) {
-        return res.status(500).send(err)
-    })
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
 
-    return res.status(200).send(send_mail_promise)
+  return res.status(200).send(send_mail_promise)
 }

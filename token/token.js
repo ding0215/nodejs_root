@@ -1,14 +1,20 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-module.exports = { jwtToken };
+// module.exports = { jwtToken };
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-function jwtToken() {
-    this.generateToken = generateToken;
-    this.decodeToken = decodeToken;
-    this.verifyToken = verifyToken;
+// function jwtToken() {
+//     this.generateToken = generateToken;
+//     this.decodeToken = decodeToken;
+//     this.verifyToken = verifyToken;
+// }
+
+exports.jwtToken = {
+    generateToken,
+    decodeToken,
+    verifyToken
 }
 
 function generateToken(data) {

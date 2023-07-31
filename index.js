@@ -36,7 +36,7 @@ app.use(morgan(format, { stream: accessLogStream }))
 
 app.use('/', router);
 
-var server = app.listen(1234, function () {
+var server = app.listen(4444, function () {
     var host = server.address().address
     var port = server.address().port
 
